@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+        <context:property-placeholder location="classpath:db.properties"/>
+    <!--   1.mybatis核心配置
+       2.注册所有的mapper.xml文件
+       3.数据库连接池的配置-->
+    <!--    配置mapper接口的注册
+            mapperScannerConfigurer
+            1.指定mapper接口文件所在包
+            2.将SqlSessionFactoryBean进行关联-->
+    <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="configLocation" value="classpath:config/mybatis-config.xml"></property>
+        <!--        使用通配符 将所有的mapper.xml文件注册-->
+        <property name="mapperLocations" value="classpath:mapper/**/*.xml"></property>
+        <!--        数据库连接池的配置-->
+        <property name="dataSource" ref="dataSource"></property>
+        <property name="typeAliasesPackage" value="com.shh.homework.entity"></property>
+    </bean>
+    <!--    扫描所有的mapper接口-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.shh.homework.mapper"></property>
+        <!--        关联SqlSessionFactoryBean-->
+        <property name="sqlSessionFactoryBeanName" value="sessionFactory"></property>
+    </bean>
+    <!--    jdbc 四个要素-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${jdbc_url}" />
+        <property name="username" value="${jdbc_user}" />
+        <property name="password" value="${jdbc_password}" />
+        <property name="filters" value="stat" />
+        <property name="maxActive" value="20" />
+        <property name="initialSize" value="1" />
+        <property name="maxWait" value="60000" />
+        <property name="minIdle" value="1" />
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <property name="minEvictableIdleTimeMillis" value="300000" />
+        <property name="testWhileIdle" value="true" />
+        <property name="testOnBorrow" value="false" />
+        <property name="testOnReturn" value="false" />
+        <property name="poolPreparedStatements" value="true" />
+        <property name="maxOpenPreparedStatements" value="20" />
+        <property name="asyncInit" value="true" />
+    </bean>
+</beans>
